@@ -69,28 +69,21 @@ class SliderEntry extends Component {
         parallaxProps: PropTypes.object
     };
 
-    addViewHistory = async () => {
+    addViewHistory = () => {
         // let history = this.state.history
         // history.push(this.props.data)
         // await this.setState({
         //     history: [...this.state.history, this.props.data]
         // })
-
-         this.props.dispatchViewTrip(this.props.data)
-        // switch(this.props.index) {
-        //     case 0: {
-        //         await AsyncStorage.setItem("trip0", JSON.stringify({ ...this.props.data }))
-        //     .then(json => console.log('set success!'))
-        //     .catch(error => console.log('error!'))
-           
-        //         break
-        //     }
-        //     case 1: {
-        //         this.saveToStorage("trip1", this.props.data)
-        //         break
-        //     }
-        // }
-       
+        //if it's top destination or rainy days
+        //then not save in last viewd history
+        if(this.props.data.tags[0] === 'top' || this.props.data.tags[0] === 'rainy') {
+            return
+        }
+        //normal trips
+        else {
+            this.props.dispatchViewTrip(this.props.data)
+        }
     }
 
     saveToStorage = async (label, data) => {
@@ -99,12 +92,6 @@ class SliderEntry extends Component {
             .then(json => console.log('set success!'))
             .catch(error => console.log('error!'))
     }
-    
-    // handler = () => {
-    //     console.log("Handler")
-    //     this.props.addViewHistory()
-    //     // this.props.addViewHistory()
-    // }
 
     get image() {
         const { data: { image }, parallax, parallaxProps, even } = this.props;
