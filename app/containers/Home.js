@@ -4,7 +4,7 @@ import firebase from 'react-native-firebase'
 import styles, { colors } from '../styles/index.style'
 import TourCarousel from '../components/TourCarousel'
 import { connect } from 'react-redux'
-import { sortBy, orderBy, difference } from 'lodash'
+import { sortBy, orderBy, difference, uniqBy, map, uniq } from 'lodash'
 
 
 
@@ -57,20 +57,9 @@ class Home extends Component {
 
     fetchRecentlyViewd = () => {
         console.log("fetch last viewd ", this.props.default.history)
-        //remove the duplicate trips 
-        //MUST ADD MORE CONDITION LATER
-        //or can use
-        // let history = this.props.default.history.filter((trip, index, self) =>
-        // index === self.findIndex((t) => (
-        //     t.description.duration === trip.description.duration && t.title === trip.title
-        //     ))
-        // )
-        // let history = this.props.default.history.filter(
-        //     (trip, index, self) => 
-        //         self.findIndex(t => t.title === trip.title && t.description.duration === trip.description.duration && t.description.price === trip.description.price) === index)
-        
+        let removeDuplicated = this.removeDuplicatedTrip(this.props.default.history)
         this.setState({
-            history: this.props.default.history
+            history: removeDuplicated
         })
     }
 
@@ -91,7 +80,10 @@ class Home extends Component {
         this.ref = firebase.database().ref(`trips`)
         this.ref.on('value', (snapshot) => {
             let trips = snapshot.val() || {}
-            this.filterTripsByTags(trips, tags)
+            let promotions = this.filterTripsByTags(trips, tags)
+            this.setState({
+                promotions
+            })
         })
     }
 
@@ -107,6 +99,7 @@ class Home extends Component {
             }
         });
         console.log("search array = ", searchedArray)
+        return searchedArray
     }
 
     calculateRating = (trips) => {
@@ -144,6 +137,10 @@ class Home extends Component {
         return 0
     }
 
+    removeDuplicatedTrip = (arr) => {
+        return uniqBy(arr, 'id')
+    }
+
     handleTopDestinationUpdate = (snapshot) => {
         let topDestination = snapshot.val() || {}
         console.log("key ", Object.keys(topDestination))
@@ -164,11 +161,14 @@ class Home extends Component {
     handlePromotionUpdate = (snapshot) => {
         const tags = ['promotion']
         let trips = snapshot.val() || {}
-        this.filterTripsByTags(trips, tags)
+        let promotions = this.filterTripsByTags(trips, tags)
+        this.setState({
+            promotions
+         })
     }
 
     recentViewd = () => {
-    if(!this.state.history || this.props.default.state === 'initial')
+    if(this.props.default.state === 'initial' || this.state.history == 0)
         return null
     else{
         return (
@@ -205,6 +205,7 @@ class Home extends Component {
                         <Text style={styles.titleHome}>Top Destinations</Text>
                         <TourCarousel data={this.state.topDestination}/>
                         <Text style={styles.titleHome}>Promotions</Text>
+                        <TourCarousel data={this.state.promotions}/>
                         <Text style={styles.titleHome}>Good for Rainy Days</Text>
                         <TourCarousel data={this.state.rainy}/>
                         <Text style={styles.titleHome}>Upcoming Holidays</Text>
