@@ -32,6 +32,7 @@ class Home extends Component {
         this.fetchRecentlyViewd()
         this.fetchRecommends()
         this.fetchPromotions()
+        console.log("DIF = ", difference(['abc', 'def'], ['abc', 'xyz']).length === 0)
         //  AsyncStorage.getItem('trip0')
         //     .then(req => console.log("read ", req))
             // .then(json => console.log("change ", json))
@@ -86,34 +87,26 @@ class Home extends Component {
     }
 
     fetchPromotions = () => {
-        const tags = ['promotion', '3 days']
+        const tags = ['promotion']
         this.ref = firebase.database().ref(`trips`)
-        this.ref.on('value', this.handlePromotionUpdate)
+        this.ref.on('value', (snapshot) => {
+            let trips = snapshot.val() || {}
+            this.filterTripsByTags(trips, tags)
+        })
     }
 
     filterTripsByTags = (trips, tagsSearch) => {
         let searchedArray = []
           trips.forEach((trip) => {
-              console.log("trip = ", trip)
             if(trip.tags) {
-                let isContained = difference(tagsSearch, trip.tags).length === 0
-                 console.log("contain = ", isContained)
+                //check if the trip contains all tags in tagSearch  
+                let isContained = difference(tagsSearch, trip.tags).length === 0 
                  if(isContained){
                      searchedArray.push(trip)
                  }
-            // trip.tags.forEach((tag) => {
-            //     console.log("tag = ", tag)
-            //     tagsSearch.forEach((search) => {
-            //         if(tag === search) {
-            //             searchedArray.push(trip)
-            //         }
-                    
-            //     })
-            // })
             }
         });
         console.log("search array = ", searchedArray)
-   
     }
 
     calculateRating = (trips) => {
