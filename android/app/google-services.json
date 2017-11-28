@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1018560223874",
+    "firebase_url": "https://travel-tour-ea526.firebaseio.com",
+    "project_id": "travel-tour-ea526",
+    "storage_bucket": "travel-tour-ea526.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1018560223874:android:72fe46a0646cb6e0",
+        "android_client_info": {
+          "package_name": "com.traveltour"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1018560223874-79dfv1f04jq3gg615t40v1rsm9f7740o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.traveltour",
+            "certificate_hash": "56bea94e2b3957e0a81be3dbad818ed4cc828220"
+          }
+        },
+        {
+          "client_id": "1018560223874-js7uvm2iqe8kak9c1fgl2bbshrqcb61o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7SF26bqBUHaeJ7ZNyhOx_YFtjmLjlvLQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1018560223874-js7uvm2iqe8kak9c1fgl2bbshrqcb61o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
