@@ -20,6 +20,7 @@ import Carousel from './app/components/Carousel'
 import Home from './app/containers/Home'
 import MyTrips from './app/containers/MyTrips'
 import Likes from './app/containers/Likes'
+import Detail from './app/containers/Detail'
 import { colors } from './app/styles/index.style'
 import { Card } from "react-native-elements"
 // import { Tabs } from './app/config/router'
@@ -141,7 +142,9 @@ export default class App extends Component {
     return (
       <Provider store={store}>
       <Router>
+       
         <Scene key="root">
+           
           <Tabs
             key="tabbar"
             swipeEnabled
@@ -159,6 +162,7 @@ export default class App extends Component {
               title="EXPLORE"
               icon={TabIcon}
               hideNavBar
+
             />
             <Scene
               key="Likes"
@@ -175,7 +179,9 @@ export default class App extends Component {
               hideNavBar
             />
           </Tabs>
+           <Scene key='tripDetail' component={Detail} hideNavBar />
         </Scene>
+       
       </Router>
       </Provider>
     );
