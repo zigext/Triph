@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { ParallaxImage } from 'react-native-snap-carousel'
 import styles from '../styles/TourSliderEntry.style'
 import { viewTrip } from '../actions/TripAction'
+import { Actions } from 'react-native-router-flux'
 
 class SliderEntry extends Component {
 
@@ -83,6 +84,7 @@ class SliderEntry extends Component {
         //normal trips
         else {
             this.props.dispatchViewTrip(this.props.data)
+            Actions.tripDetail()
         }
     }
 
