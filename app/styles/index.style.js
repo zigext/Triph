@@ -5,7 +5,8 @@ export const colors = {
     gray: '#888888',
     background1: '#B721FF',
     background2: '#21D4FD',
-    blue: '#3498DB'
+    blue: '#3498DB',
+    underlay: '#d4d7d8',
 };
 
 export default StyleSheet.create({
@@ -72,5 +73,15 @@ export default StyleSheet.create({
         height: null,
         width: null,
         // alignSelf: 'stretch'
+    },
+    seeAllButton: {
+      
+    },
+    seeAllText: {
+        paddingHorizontal: 25,
+    },
+    category: {
+        flexDirection: 'row', 
+        justifyContent: 'space-between'
     }
 });
