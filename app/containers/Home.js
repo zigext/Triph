@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Text, Image, AsyncStorage } from 'react-native'
+import { View, ScrollView, Text, Image, AsyncStorage, TouchableHighlight } from 'react-native'
 import firebase from 'react-native-firebase'
 import styles, { colors } from '../styles/index.style'
 import TourCarousel from '../components/TourCarousel'
 import { connect } from 'react-redux'
-import { sortBy, orderBy, difference, uniqBy, map, uniq } from 'lodash'
+import { sortBy, orderBy, difference, uniqBy, map, uniq, maxBy } from 'lodash'
+import moment from 'moment'
 
 
 
@@ -16,27 +17,49 @@ class Home extends Component {
         this.ref = null
         this.state = {
             search: '',
+            country: '',
             recentViewd: [],
             topDestination: [],
             rainy: [],
             history: [],
             recommends: [],
             promotions: [],
+            holidays: [],
+            tripsByHoliday: [],
+            recommendsAll: [],
+            promotionsAll: [],
+
         }
     }
 
 
-    componentDidMount = () => {
+    componentDidMount = async () => {
+        await this.fetchCountry()
         this.fetchTopDestination()
         this.fetchRainy()
         this.fetchRecentlyViewd()
         this.fetchRecommends()
         this.fetchPromotions()
-        console.log("DIF = ", difference(['abc', 'def'], ['abc', 'xyz']).length === 0)
-        //  AsyncStorage.getItem('trip0')
-        //     .then(req => console.log("read ", req))
-            // .then(json => console.log("change ", json))
-            // .catch(error => console.log('error!'));
+        await this.fetchHolidays()
+        let comingHoliday = this.findComingHoliday()
+        this.fetchTripsByHoliday(comingHoliday)
+
+    }
+
+    fetchCountry = async () => {
+        let url = 'https://freegeoip.net/json/'
+        await fetch(url)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                console.log(responseJson)
+                this.setState({
+                    country: responseJson.country_name.toLowerCase()
+                    // regionName: responseJson.region_name
+                })
+            })
+            .catch((error) => {
+                console.error(error)
+            })
     }
 
     // componentWillUnmount() {
@@ -69,9 +92,70 @@ class Home extends Component {
             let trips = snapshot.val() || {}
             let newTrips = this.calculateRating(trips)
             newTrips.sort(this.compare)
+            let slice = newTrips.slice(0, 7) //show only 6
             this.setState({
-                recommends: newTrips
+                recommends: slice,
+                recommendsAll: newTrips
             })
+        })
+    }
+
+
+    fetchHolidays = async () => {
+        this.ref = firebase.database().ref(`holidays/${this.state.country}`)
+        await this.ref.once('value', async (snapshot) => {
+            let holidays = snapshot.val() || {}
+            await this.setState({
+                holidays
+            })
+        })
+    }
+
+    findComingHoliday = () => {
+        let now = moment.utc()
+        let year = now.year()
+        let holidays = this.state.holidays
+        let splitDate = []
+        let startDay
+        let startMonth
+        let date
+        let nextYear
+        let diff
+
+        holidays.forEach((holiday) => {
+            splitDate = holiday.startedDate.split('-')
+            startDay = splitDate[1] //day
+            startMonth = splitDate[0] //month
+            //create Date by adding current year, and
+            //add new property
+            holiday.date = new Date(`${year}-${startMonth}-${startDay}`)
+            //difference between now and startDate of holiday
+            diff = now.diff(holiday.date)
+
+            //if now is eariler , diff will be negative
+            //if the holiday is already passed then calculate diff between now and the holiday next year
+            //e.g. now is Dec 31, then it can calculate holiday of Jan 1
+            if (diff > 0) {
+                nextYear = year + 1
+                holiday.date = new Date(`${nextYear}-${startMonth}-${startDay}`)
+                diff = now.diff(holiday.date)
+            }
+            holiday.diffFromNow = diff
+        })
+
+        //find upcoming holiday
+        //diff are negative values, so maximum diff is the nearest holiday
+        let comingHoliday = maxBy(holidays, 'diffFromNow')
+        return comingHoliday
+    }
+
+    fetchTripsByHoliday = (holiday) => {
+        this.ref = firebase.database().ref(`trips`)
+        this.ref.on('value', (snapshot) => {
+            let trips = snapshot.val() || {}
+           
+
+
         })
     }
 
@@ -80,22 +164,24 @@ class Home extends Component {
         this.ref = firebase.database().ref(`trips`)
         this.ref.on('value', (snapshot) => {
             let trips = snapshot.val() || {}
-            let promotions = this.filterTripsByTags(trips, tags)
+            let promotionsAll = this.filterTripsByTags(trips, tags)
+            let promotions = promotionsAll.slice(0, 7) //show only 6
             this.setState({
-                promotions
+                promotions,
+                promotionsAll
             })
         })
     }
 
     filterTripsByTags = (trips, tagsSearch) => {
         let searchedArray = []
-          trips.forEach((trip) => {
-            if(trip.tags) {
+        trips.forEach((trip) => {
+            if (trip.tags) {
                 //check if the trip contains all tags in tagSearch  
-                let isContained = difference(tagsSearch, trip.tags).length === 0 
-                 if(isContained){
-                     searchedArray.push(trip)
-                 }
+                let isContained = difference(tagsSearch, trip.tags).length === 0
+                if (isContained) {
+                    searchedArray.push(trip)
+                }
             }
         });
         console.log("search array = ", searchedArray)
@@ -107,17 +193,17 @@ class Home extends Component {
             let totalScore = 0
             let rating = 0
             //The trip already has been rated 
-            if(trip.rating){
-                 trip.rating.forEach((elementScore) => {
+            if (trip.rating) {
+                trip.rating.forEach((elementScore) => {
                     totalScore += elementScore
-                })  
-                let len =  trip.rating.length
-                rating = totalScore/len //calculate rating to 5 stars
+                })
+                let len = trip.rating.length
+                rating = totalScore / len //calculate rating to 5 stars
                 trip.rates = rating //add new property to keep rating value
             }
             //No one rates the trip yet
             else {
-                 trip.rates = 0 //default rate is 0
+                trip.rates = 0 //default rate is 0
             }
         });
         return trips
@@ -128,7 +214,7 @@ class Home extends Component {
     //     return sortArr
     // }
 
-      //sort array by rates descending
+    //sort array by rates descending
     compare = (a, b) => {
         if (a.rates < b.rates)
             return 1
@@ -143,7 +229,7 @@ class Home extends Component {
 
     handleTopDestinationUpdate = (snapshot) => {
         let topDestination = snapshot.val() || {}
-        console.log("key ", Object.keys(topDestination))
+        // console.log("key ", Object.keys(topDestination))
         this.setState({
             topDestination
         })
@@ -164,24 +250,24 @@ class Home extends Component {
         let promotions = this.filterTripsByTags(trips, tags)
         this.setState({
             promotions
-         })
+        })
     }
 
     recentViewd = () => {
-    if(this.props.default.state === 'initial' || this.state.history == 0)
-        return null
-    else{
-        return (
-            <View>
-                <Text style={styles.titleHome}>Recently viewd</Text>
-                <TourCarousel data={this.state.history}/>
-            </View>
-        )
+        if (this.props.default.state === 'initial' || this.state.history == 0)
+            return null
+        else {
+            return (
+                <View>
+                    <Text style={styles.titleHome}>Recently viewd</Text>
+                    <TourCarousel data={this.state.history} />
+                </View>
+            )
+        }
     }
-}
 
     addViewHistory = (newTrip) => {
-        
+
         //  console.log(newTrip)
         // await this.setState({
         //     history: [...this.state.history, newTrip]
@@ -199,15 +285,20 @@ class Home extends Component {
                         style={styles.imageHeader} resizeMode="cover" />}
                     <View style={{ flex: 1, backgroundColor: 'yellow' }}>
                         {this.recentViewd()}
-                        
+
                         <Text style={styles.titleHome}>Recommends</Text>
-                        <TourCarousel data={this.state.recommends}/>
+                        <TourCarousel data={this.state.recommends} />
                         <Text style={styles.titleHome}>Top Destinations</Text>
-                        <TourCarousel data={this.state.topDestination}/>
-                        <Text style={styles.titleHome}>Promotions</Text>
-                        <TourCarousel data={this.state.promotions}/>
+                        <TourCarousel data={this.state.topDestination} />
+                        <View style={styles.category}>
+                            <Text style={styles.titleHome}>Promotions</Text>
+                            <TouchableHighlight underlayColor={colors.underlay} onPress={() => console.log("see all")}>
+                                <Text style={styles.seeAllText}>See all</Text>
+                            </TouchableHighlight>
+                        </View>
+                        <TourCarousel data={this.state.promotions} />
                         <Text style={styles.titleHome}>Good for Rainy Days</Text>
-                        <TourCarousel data={this.state.rainy}/>
+                        <TourCarousel data={this.state.rainy} />
                         <Text style={styles.titleHome}>Upcoming Holidays</Text>
 
 
