@@ -1,4 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+// import { Dimensions } from 'Dimensions'
+
+const { width, height } = Dimensions.get('window')
 
 export const colors = {
     black: '#1a1917',
@@ -7,12 +10,17 @@ export const colors = {
     background2: '#21D4FD',
     blue: '#3498DB',
     underlay: '#d4d7d8',
+    modalBackground: '#424242',
+    lightGray: '#757575',
 };
 
 export default StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.background1
+        backgroundColor: 'white',
+        justifyContent: 'center',
+       
+        // backgroundColor: colors.background1
     },
     gradient: {
         ...StyleSheet.absoluteFillObject
@@ -69,9 +77,9 @@ export default StyleSheet.create({
         // left: 0,
         // right: 0,
         // position: 'absolute',
-        flex: 1,
-        height: null,
-        width: null,
+        // flex: 1,
+        height: 200,
+        width: 'auto',
         // alignSelf: 'stretch'
     },
     seeAllButton: {
@@ -83,5 +91,44 @@ export default StyleSheet.create({
     category: {
         flexDirection: 'row', 
         justifyContent: 'space-between'
+    },
+    searchBar: {
+        flex: 1,
+        opacity: 0.5,
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        width: width,
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+        borderBottomColor: 'transparent',
+        borderTopColor: 'transparent',
+    },
+    topic: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        paddingVertical: 25,
+        paddingHorizontal: 21,
+        color: 'white',
+    },
+    modal: {
+        backgroundColor: colors.modalBackground,
+        flex: 1,
+    },
+    modalContent: {
+        flex: 1,
+        paddingVertical: 50,
+        paddingTop: 120,
+    },
+    modalTitleList: {
+        color: 'white',
+        // fontSize: 16,
+    },
+    modalList: {
+        borderBottomColor: colors.lightGray, 
+        backgroundColor: colors.modalBackground,
+        borderTopWidth: 0,
+        borderBottomWidth: 0.5,
+        paddingHorizontal: 10,
     }
 });
