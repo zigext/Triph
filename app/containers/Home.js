@@ -4,6 +4,8 @@ import firebase from 'react-native-firebase'
 import styles, { colors } from '../styles/index.style'
 import TourCarousel from '../components/TourCarousel'
 import { connect } from 'react-redux'
+import { SearchBar } from 'react-native-elements'
+import { Actions } from 'react-native-router-flux'
 import { sortBy, orderBy, difference, uniqBy, map, uniq, maxBy } from 'lodash'
 import moment from 'moment'
 
@@ -17,6 +19,7 @@ class Home extends Component {
             country: '',
             recentViewd: [],
             topDestination: [],
+            topDestinationTitle: [],
             rainy: [],
             history: [],
             recommends: [],
@@ -25,6 +28,7 @@ class Home extends Component {
             tripsByHoliday: [],
             recommendsAll: [],
             promotionsAll: [],
+            allDestinations: [],
 
         }
     }
@@ -40,6 +44,7 @@ class Home extends Component {
         await this.fetchHolidays()
         let comingHoliday = this.findComingHoliday()
         this.fetchTripsByHoliday(comingHoliday)
+        this.fetchAllTDestinations()
 
     }
 
@@ -69,8 +74,14 @@ class Home extends Component {
         this.ref = firebase.database().ref(`top_destination`)
         this.ref.once('value', (snapshot) => {
             let topDestination = snapshot.val() || {}
+            let topDestinationTitle = snapshot.val() || {}
+            topDestinationTitle.forEach((o) => {
+                delete o.image
+                delete o.tags
+            })
             this.setState({
-                topDestination
+                topDestination,
+                topDestinationTitle
             })
         })
     }
@@ -83,6 +94,16 @@ class Home extends Component {
             this.setState({
                 rainy
             })
+        })
+    }
+
+    fetchAllTDestinations = () => {
+        this.ref = firebase.database().ref(`destinations`)
+        this.ref.once('value', (snapshot) => {
+            let tripNames = snapshot.val() || {}
+            console.log("__________", tripNames)
+       
+        
         })
     }
 
@@ -185,6 +206,7 @@ class Home extends Component {
 
         trips.forEach((trip) => {
             if (trip.description.startedDate) {
+                //check if trip's started date is between holiday duration 
                 let isBetween = moment(trip.description.startedDate).isBetween(startedHoliday, finishedHoliday, null, '[]')
                 if (isBetween) {
                     filtered.push(trip)
@@ -301,13 +323,16 @@ class Home extends Component {
         }
     }
 
-    addViewHistory = (newTrip) => {
+    onChangeText = () => {
 
-        //  console.log(newTrip)
-        // await this.setState({
-        //     history: [...this.state.history, newTrip]
-        // })
-        // console.log("history ", this.state.history)
+    }
+
+    onClearText = () => {
+
+    }
+
+    onSearchBarFocus = () => {
+        Actions.searchModal({ topDestinationName: this.state.topDestinationTitle })
     }
 
     render() {
@@ -318,9 +343,17 @@ class Home extends Component {
                 <ScrollView style={{ flex: 1, backgroundColor: 'pink' }}>
                     {this.state.search ? <Text>Picture</Text> : <Image source={{ uri: "https://firebasestorage.googleapis.com/v0/b/travel-tour-ea526.appspot.com/o/teaser.jpeg.jpg?alt=media&token=5a578eff-7a47-48e1-8167-92c297f177ec" }}
                         style={styles.imageHeader} resizeMode="cover" />}
-                    <View style={{ flex: 1, backgroundColor: 'yellow' }}>
-                        {this.recentViewd()}
 
+                    <SearchBar
+                        round
+                        lightTheme
+                        onFocus={this.onSearchBarFocus}
+                        containerStyle={styles.searchBar}
+                        placeholder='Type Here...' />
+
+                    <View style={{ flex: 1, backgroundColor: 'white', paddingVertical: 30 }}>
+
+                        {this.recentViewd()}
                         <Text style={styles.titleHome}>Recommends</Text>
                         <TourCarousel data={this.state.recommends} />
                         <Text style={styles.titleHome}>Top Destinations</Text>

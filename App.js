@@ -19,17 +19,18 @@ import { Icon } from 'react-native-elements'
 import Carousel from './app/components/Carousel'
 import Home from './app/containers/Home'
 import MyTrips from './app/containers/MyTrips'
-import Likes from './app/containers/Likes'
+import Saved from './app/containers/Saved'
 import Detail from './app/containers/Detail'
+import SearchModal from './app/containers/SearchModal'
 import { colors } from './app/styles/index.style'
 import { Card } from "react-native-elements"
-// import { Tabs } from './app/config/router'
-import { Router, Scene, Tabs } from 'react-native-router-flux'
+import { Router, Scene, Tabs, Modal, Overlay, Actions } from 'react-native-router-flux'
+import CardStackStyleInterpolator from 'react-navigation/src/views/CardStack/CardStackStyleInterpolator'
 import { Provider } from 'react-redux'
 import { AsyncStorage } from 'react-native';
 import { persistStore } from 'redux-persist'
 import store from './app/config/Store'
-// import storage from 'redux-persist/es/storage'
+
 
 const TabIcon = ({ title, focused }) => {
   let color
@@ -96,34 +97,12 @@ export default class App extends Component {
   //   }
   // }
 
-  // writeToFirebase = () => {
-  //   let newData = {
-  //     name: 'Tom',
-  //     age: 36
-  //   }
-  //   firebase.database().ref(`profile/`).push(newData)
-  //     .then((data) => {
-  //       console.log("add to Firebase success")
-  //     }).
-  //     catch((err) => {
-  //       console.log("add to Firebase failed = ", err)
-  //     });
-  // }
-
-  // // Bind the method only once to keep the same reference
-  // handleProfileUpdate = (snapshot) => {
-  //   let profile = snapshot.val()
-  //   console.log(profile)
-
-  // }
-
-
   componentDidMount() {
     persistStore(
       store,
       {
         storage: AsyncStorage,
-        
+
       },
       () => {
         this.setState({
@@ -134,55 +113,74 @@ export default class App extends Component {
   }
 
   render() {
-    if(!this.state.isReady){
+    if (!this.state.isReady) {
       return (
         <Text>Loading...</Text>
       )
     }
+
     return (
       <Provider store={store}>
-      <Router>
-       
-        <Scene key="root">
-           
-          <Tabs
-            key="tabbar"
-            swipeEnabled
-            showLabel={true}
-            tabBarStyle={styles.tabBarStyle}
-            labelStyle={styles.labelStyle}
-            tabBarPosition="bottom"
-            activeBackgroundColor="#eee"
-            inactiveBackgroundColor="#FDFEFE"
-            activeTintColor={colors.blue}
-          >
-            <Scene
-              key="Home"
-              component={Home}
-              title="EXPLORE"
-              icon={TabIcon}
-              hideNavBar
+        <Router>
+          <Overlay>
+            <Modal key="modal"
 
-            />
-            <Scene
-              key="Likes"
-              component={Likes}
-              title="SAVED"
-              icon={TabIcon}
-              hideNavBar
-            />
-            <Scene
-              key="MyTrips"
-              component={MyTrips}
-              title="TRIPS"
-              icon={TabIcon}
-              hideNavBar
-            />
-          </Tabs>
-           <Scene key='tripDetail' component={Detail} hideNavBar />
-        </Scene>
-       
-      </Router>
+              transitionConfig={() => ({ screenInterpolator: CardStackStyleInterpolator.forFadeFromBottomAndroid })}>
+
+              <Scene key="root">
+
+                <Tabs
+                  key="tabbar"
+                  swipeEnabled
+                  showLabel={true}
+                  tabBarStyle={styles.tabBarStyle}
+                  labelStyle={styles.labelStyle}
+                  tabBarPosition="bottom"
+                  activeBackgroundColor="#eee"
+                  inactiveBackgroundColor="#FDFEFE"
+                  activeTintColor={colors.blue}
+                >
+                  <Scene
+                    key="Home"
+                    component={Home}
+                    title="EXPLORE"
+                    icon={TabIcon}
+                    hideNavBar
+
+                  />
+                  <Scene
+                    key="Saved"
+                    component={Saved}
+                    title="SAVED"
+                    icon={TabIcon}
+                    hideNavBar
+                  />
+                  <Scene
+                    key="MyTrips"
+                    component={MyTrips}
+                    title="TRIPS"
+                    icon={TabIcon}
+                    hideNavBar
+                  />
+                </Tabs>
+                <Scene key='tripDetail' component={Detail} hideNavBar />
+              </Scene>
+
+              <Scene key="searchModal"
+                component={SearchModal}
+                onExit={() => console.log('onExit')}
+                onLeft={Actions.pop}
+                panHandlers={null}
+                duration={1}
+                back
+                backButtonTintColor='white'
+                navTransparent
+
+              />
+              {/*navigationBarStyle={{backgroundColor: colors.modalBackground}}*/}
+            </Modal>
+          </Overlay>
+        </Router>
       </Provider>
     );
   }
