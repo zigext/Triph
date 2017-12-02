@@ -8,9 +8,6 @@ import { sortBy, orderBy, difference, uniqBy, map, uniq, maxBy } from 'lodash'
 import moment from 'moment'
 
 
-
-
-
 class Home extends Component {
     constructor(props) {
         super(props)
@@ -70,12 +67,23 @@ class Home extends Component {
 
     fetchTopDestination = () => {
         this.ref = firebase.database().ref(`top_destination`)
-        this.ref.on('value', this.handleTopDestinationUpdate)
+        this.ref.once('value', (snapshot) => {
+            let topDestination = snapshot.val() || {}
+            this.setState({
+                topDestination
+            })
+        })
     }
 
     fetchRainy = () => {
         this.ref = firebase.database().ref(`rainy_days`)
-        this.ref.on('value', this.handleRainyUpdate)
+        this.ref.once('value', (snapshot) => {
+            let rainy = snapshot.val() || {}
+            // let topArray = Object.keys(top).map((k) => top[k])
+            this.setState({
+                rainy
+            })
+        })
     }
 
     fetchRecentlyViewd = () => {
@@ -153,10 +161,38 @@ class Home extends Component {
         this.ref = firebase.database().ref(`trips`)
         this.ref.on('value', (snapshot) => {
             let trips = snapshot.val() || {}
-           
-
+            let tripsByHoliday = this.filterTripsByHolidayDate(trips, holiday)
+            this.setState({
+                tripsByHoliday
+            })
 
         })
+    }
+
+    filterTripsByHolidayDate = (trips, holiday) => {
+        let filtered = []
+        let now = moment.utc()
+        let year = now.year()
+        let startedHoliday = `${year}-`.concat(holiday.startedDate)
+        let finishedHoliday = `${year}-`.concat(holiday.finishedDate)
+        let diff = moment(startedHoliday).diff(finishedHoliday)
+        //if finish date of holiday is before start date
+        //then finish date is in the next year
+        //e.g. 2017-12-31 to 2018-01-02
+        if (diff > 0) {
+            finishedHoliday = `${year + 1}-`.concat(holiday.finishedDate)
+        }
+
+        trips.forEach((trip) => {
+            if (trip.description.startedDate) {
+                let isBetween = moment(trip.description.startedDate).isBetween(startedHoliday, finishedHoliday, null, '[]')
+                if (isBetween) {
+                    filtered.push(trip)
+                }
+                console.log("IS BETWEEN ", isBetween)
+            }
+        })
+        return filtered
     }
 
     fetchPromotions = () => {
@@ -227,22 +263,21 @@ class Home extends Component {
         return uniqBy(arr, 'id')
     }
 
-    handleTopDestinationUpdate = (snapshot) => {
-        let topDestination = snapshot.val() || {}
-        // console.log("key ", Object.keys(topDestination))
-        this.setState({
-            topDestination
-        })
+    // handleTopDestinationUpdate = (snapshot) => {
+    //     let topDestination = snapshot.val() || {}
+    //     this.setState({
+    //         topDestination
+    //     })
 
-    }
+    // }
 
-    handleRainyUpdate = (snapshot) => {
-        let rainy = snapshot.val() || {}
-        // let topArray = Object.keys(top).map((k) => top[k])
-        this.setState({
-            rainy
-        })
-    }
+    // handleRainyUpdate = (snapshot) => {
+    //     let rainy = snapshot.val() || {}
+    //     // let topArray = Object.keys(top).map((k) => top[k])
+    //     this.setState({
+    //         rainy
+    //     })
+    // }
 
     handlePromotionUpdate = (snapshot) => {
         const tags = ['promotion']
@@ -300,7 +335,7 @@ class Home extends Component {
                         <Text style={styles.titleHome}>Good for Rainy Days</Text>
                         <TourCarousel data={this.state.rainy} />
                         <Text style={styles.titleHome}>Upcoming Holidays</Text>
-
+                        <TourCarousel data={this.state.tripsByHoliday} />
 
                     </View>
                 </ScrollView>
