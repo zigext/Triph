@@ -3,6 +3,7 @@ import * as types from '../actions/actionTypes'
 const initialState = {
     state: "initial",
     history: [],
+    search: {},
 }
 
 export default function TripReducer(state = initialState, action = {}) {
@@ -21,10 +22,10 @@ export default function TripReducer(state = initialState, action = {}) {
                 history: [...state.history, action.payload]
             }
         
-        case types.GET_PROFILE:
+        case types.SEARCH:
             return {
                 ...state,
-                user: Object.assign(state.user, action.payload)
+                search: action.payload
             }
 
         default:

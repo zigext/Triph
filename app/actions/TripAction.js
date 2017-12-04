@@ -9,11 +9,11 @@ export const viewTrip = (trip) => {
     }
 }
 
-export const getProfile = (profile) => {
+export const searchDestination = (destination) => {
     return {
-        type: types.GET_PROFILE,
+        type: types.SEARCH,
         payload: {
-            profile
+            ...destination
         }
     }
 }

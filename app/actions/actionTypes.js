@@ -1,1 +1,2 @@
 export const CLICK_TO_VIEW_DETAIL = 'CLICK_TO_VIEW_DETAIL'
+export const SEARCH = 'SEARCH'
