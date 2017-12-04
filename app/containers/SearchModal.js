@@ -1,55 +1,135 @@
 import React, { Component } from 'react'
 import { View, ScrollView, Text } from 'react-native'
-import { SearchBar, List, ListItem, Divider } from 'react-native-elements'
+import { SearchBar, List, ListItem } from 'react-native-elements'
+import { NavigationActions } from 'react-navigation'
+import { Actions } from 'react-native-router-flux'
+import { connect } from 'react-redux'
 import styles, { colors } from '../styles/index.style'
-export default class SearchModal extends Component {
+import { searchDestination } from '../actions/TripAction'
+
+class SearchModal extends Component {
     constructor(props) {
         super(props)
         this.state = {
             search: '',
-            initialTrips: []
+            initialTrips: [],
+            allDestinationsFiltered: this.props.allDestinationTitle,
+            allDestinationsInitial: this.props.allDestinationTitle,
+
         }
     }
     // https://codepen.io/mtclmn/pen/QyPVJp
-    filterList = (text) => {
+    filterSearch = (text) => {
         console.log(text)
-        // var updatedList = this.state.initialItems;
-        // updatedList = updatedList.filter(function (item) {
-        //     return item.toLowerCase().search(
-        //         event.target.value.toLowerCase()) !== -1;
-        // });
-        // this.setState({ items: updatedList });
+        const filtered = this.state.allDestinationsInitial.filter(function (item) {
+            const itemData = item.title.toLowerCase().trim()
+            const textData = text.toLowerCase().trim()
+            return itemData.indexOf(textData) > -1
+        })
+        this.setState({
+            allDestinationsFiltered: filtered,
+            search: text
+        })
     }
 
+    chooseDestination = (destination) => {
+        console.log("cilick ", destination)
+        // Actions.refresh({test: 123})
+        // Actions.Home({test: 123})
+        this.props.dispatchSearch(destination)
+        Actions.pop({ refresh: { test: 123 } })
+        // NavigationActions.pop( {refresh: {test: 123} })
+    }
+
+    //  inputStyle={{ fontSize: 18 }}
+    //                     icon={{ paddingVertical: 50 }}
     render() {
-        
+
         return (
             <View style={styles.modal}>
-                <SearchBar
-                    round
-                    containerStyle={[styles.searchBar, { opacity: 1, paddingVertical: 50 }]}
-                    inputStyle={{ fontSize: 18 }}
-                    icon={{ paddingVertical: 50 }}
-                    placeholder='Where to?'
-                    onChangeText={this.filterList} />
 
-                <View style={styles.modalContent}>
-                    <Text style={styles.topic}>Popular destinations</Text>
-                    <List containerStyle={styles.modalList}>
-                        {
-                            this.props.topDestinationName.map((item, i) => (
-                                <ListItem
-                                    key={i}
-                                    title={item.title}
-                                    hideChevron
-                                    titleStyle={styles.modalTitleList}
-                                />
-                            ))
 
-                        }
-                    </List>
-                </View>
+                <ScrollView>
+
+                    <SearchBar
+                        round
+                        containerStyle={[styles.searchBar, { opacity: 1, paddingVertical: 50 }]}
+                        inputStyle={{ fontSize: 18 }}
+                        placeholder='Where to?'
+                        onChangeText={this.filterSearch}
+                         />
+
+                    <View style={styles.modalContent}>
+
+
+
+                        <List containerStyle={styles.modalList}>
+                            {
+                                this.state.allDestinationsFiltered.map((item, i) => (
+                                    <ListItem
+                                        key={i}
+                                        title={item.title}
+                                        hideChevron
+                                        titleStyle={styles.modalTitleList}
+                                        containerStyle={styles.modalListItem}
+                                        onPress={() => this.chooseDestination(item)}
+                                    />
+                                ))
+
+                            }
+                        </List>
+
+                        <Text style={styles.topic}>Popular destinations</Text>
+
+                        <List containerStyle={styles.modalList}>
+                            {
+                                this.props.topDestinationTitle.map((item, i) => (
+                                    <ListItem
+                                        key={i}
+                                        title={item.title}
+                                        hideChevron
+                                        titleStyle={styles.modalTitleList}
+                                        containerStyle={styles.modalListItem}
+                                        onPress={() => this.chooseDestination(item)}
+                                    />
+                                ))
+
+                            }
+                        </List>
+
+                        <Text style={styles.topic}>Good for rainy days</Text>
+
+                        <List containerStyle={styles.modalList}>
+                            {
+                                this.props.rainyTitle.map((item, i) => (
+                                    <ListItem
+                                        key={i}
+                                        title={item.title}
+                                        hideChevron
+                                        titleStyle={styles.modalTitleList}
+                                        containerStyle={styles.modalListItem}
+                                        onPress={() => this.chooseDestination(item)}
+                                    />
+                                ))
+
+                            }
+                        </List>
+                    </View>
+          
+                </ScrollView>
             </View>
         );
     }
 }
+
+const mapStateToProps = (state) => {
+    return state
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        dispatchSearch: (destination) => dispatch(searchDestination(destination))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchModal)
