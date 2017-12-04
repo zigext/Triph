@@ -102,7 +102,7 @@ export default class App extends Component {
       store,
       {
         storage: AsyncStorage,
-
+        blacklist: ['default']
       },
       () => {
         this.setState({
