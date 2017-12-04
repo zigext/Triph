@@ -30,6 +30,11 @@ class Home extends Component {
             recommendsAll: [],
             promotionsAll: [],
             allDestinationTitle: [],
+            allTrips: [],
+            halfDay: [],
+            fullDay: [],
+            twoDay: [],
+            threeDay: [],
 
         }
         this.onSearchDone = this.onSearchDone.bind(this)
@@ -51,18 +56,20 @@ class Home extends Component {
         let comingHoliday = this.findComingHoliday()
         this.fetchTripsByHoliday(comingHoliday)
         this.fetchAllTDestinations()
+
     }
 
     componentWillReceiveProps = (nextProps) => {
         console.log("RECEIVE ", nextProps)
+        
     }
 
     fetchCountry = async () => {
+        //url for fetching country and region name
         let url = 'https://freegeoip.net/json/'
         await fetch(url)
             .then((response) => response.json())
             .then((responseJson) => {
-                console.log(responseJson)
                 this.setState({
                     country: responseJson.country_name.toLowerCase()
                     // regionName: responseJson.region_name
@@ -79,6 +86,12 @@ class Home extends Component {
             search: destination
         })
         console.log("STATE SEARCH ", this.state.search)
+        let desStr = this.state.search.title.toLowerCase().replace(/\s/g, '')
+        this.fetchRecommends(desStr)
+        this.FetchTripsByDuration("halfday", desStr)
+        this.FetchTripsByDuration("fullday", desStr)
+        this.FetchTripsByDuration("2days", desStr)
+        this.FetchTripsByDuration("3days", desStr)
         // Actions.refresh()
     }
 
@@ -129,6 +142,16 @@ class Home extends Component {
         })
     }
 
+    fetchAllTrips = () => {
+        this.ref = firebase.database().ref(`trips`)
+        this.ref.on('value', (snapshot) => {
+            let allTrips = snapshot.val() || {}
+            this.setState({
+                allTrips
+            })
+        })
+    }
+
     fetchRecentlyViewd = () => {
         console.log("fetch last viewd ", this.props.default.history)
         let removeDuplicated = this.removeDuplicatedTrip(this.props.default.history)
@@ -137,10 +160,17 @@ class Home extends Component {
         })
     }
 
-    fetchRecommends = () => {
+    //fetch by rating
+    fetchRecommends = (destination = null) => {
         this.ref = firebase.database().ref(`trips`)
         this.ref.on('value', (snapshot) => {
             let trips = snapshot.val() || {}
+            if(destination) {
+                console.log("IF")
+                trips = this.filterTripsByTags(trips, [destination])
+                console.log("IF ", trips)
+                console.log("IF ", [destination])
+            }
             let newTrips = this.calculateRating(trips)
             newTrips.sort(this.compare)
             let slice = newTrips.slice(0, 7) //show only 6
@@ -332,6 +362,47 @@ class Home extends Component {
         })
     }
 
+    FetchTripsByDuration = (duration, destination) => {
+        //to lower case and replace all whitespaces
+        
+        let tags = [duration, destination]
+        this.ref = firebase.database().ref(`trips`)
+        this.ref.on('value', (snapshot) => {
+            let trips = snapshot.val() || {}
+            let filtered = this.filterTripsByTags(trips, tags)
+            console.log("filter ", filtered)
+            switch(duration) {
+                case "halfday":
+                    this.setState({
+                        halfDay: filtered
+                    })
+                    break
+                 case "fullday":
+                    this.setState({
+                        fullDay: filtered
+                    })
+                    break
+                 case "2days":
+                    this.setState({
+                        twoDay: filtered
+                    })
+                    break
+                 case "3days":
+                    this.setState({
+                        threeDay: filtered
+                    })
+                    break
+                default:
+                    return 
+            }
+            // let promotions = promotionsAll.slice(0, 7) //show only 6
+            // this.setState({
+            //     promotions,
+            //     promotionsAll
+            // })
+        })
+    }
+
     recentViewd = () => {
         if (this.props.default.state === 'initial' || this.state.history == 0)
             return null
@@ -357,6 +428,7 @@ class Home extends Component {
     renderBeforeSearch = () => {
         return (
             <View>
+                {this.recentViewd()}
                 <Text style={styles.titleHome}>Recommends</Text>
                 <TourCarousel data={this.state.recommends} />
                 <Text style={styles.titleHome}>Top Destinations</Text>
@@ -377,9 +449,37 @@ class Home extends Component {
     }
 
     renderAfterSearch = () => {
-        <View>
-            <Text>AFTER SEARCH</Text>
-        </View>
+
+
+        return (
+            <View>
+                <Text style={styles.titleHome}>Recommends</Text>
+                <TourCarousel data={this.state.recommends} />
+                <Text style={styles.titleHome}>Half day</Text>
+                <TourCarousel data={this.state.halfDay} />
+                <View style={styles.category}>
+                    <Text style={styles.titleHome}>Full day</Text>
+                    <TouchableHighlight underlayColor={colors.underlay} onPress={() => console.log("see all")}>
+                        <Text style={styles.seeAllText}>See all</Text>
+                    </TouchableHighlight>
+                </View>
+                <TourCarousel data={this.state.fullDay} />
+                <View style={styles.category}>
+                    <Text style={styles.titleHome}>2 Days 1 Night</Text>
+                    <TouchableHighlight underlayColor={colors.underlay} onPress={() => console.log("see all")}>
+                        <Text style={styles.seeAllText}>See all</Text>
+                    </TouchableHighlight>
+                </View>
+                <TourCarousel data={this.state.twoDay} />
+                <View style={styles.category}>
+                    <Text style={styles.titleHome}>3 Days 2 Nights</Text>
+                    <TouchableHighlight underlayColor={colors.underlay} onPress={() => console.log("see all")}>
+                        <Text style={styles.seeAllText}>See all</Text>
+                    </TouchableHighlight>
+                </View>
+                <TourCarousel data={this.state.threeDay} />
+            </View>
+        )
     }
 
     render() {
