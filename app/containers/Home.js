@@ -15,7 +15,7 @@ class Home extends Component {
         super(props)
         this.ref = null
         this.state = {
-            search: '',
+            search: null,
             country: '',
             recentViewd: [],
             topDestination: [],
@@ -32,12 +32,14 @@ class Home extends Component {
             allDestinationTitle: [],
 
         }
+        this.onSearchDone = this.onSearchDone.bind(this)
     }
 
 
 
 
     componentDidMount = async () => {
+
         Keyboard.dismiss()
         await this.fetchCountry()
         this.fetchTopDestination()
@@ -52,7 +54,7 @@ class Home extends Component {
     }
 
     componentWillReceiveProps = (nextProps) => {
-        console.log("RECEIVE ", nextProps.default.search)
+        console.log("RECEIVE ", nextProps)
     }
 
     fetchCountry = async () => {
@@ -69,6 +71,15 @@ class Home extends Component {
             .catch((error) => {
                 console.error(error)
             })
+    }
+
+    onSearchDone = async (destination) => {
+        console.log("ON SEARCH DONE ", destination)
+        await this.setState({
+            search: destination
+        })
+        console.log("STATE SEARCH ", this.state.search)
+        // Actions.refresh()
     }
 
     // componentWillUnmount() {
@@ -334,29 +345,52 @@ class Home extends Component {
         }
     }
 
-    onChangeText = () => {
-
-    }
-
-    onClearText = () => {
-
-    }
-
     onSearchBarFocus = () => {
-        Actions.searchModal({ topDestinationTitle: this.state.topDestinationTitle, 
-                              allDestinationTitle: this.state.allDestinationTitle,
-                              rainyTitle: this.state.rainyTitle
-                            })
+        Actions.searchModal({
+            topDestinationTitle: this.state.topDestinationTitle,
+            allDestinationTitle: this.state.allDestinationTitle,
+            rainyTitle: this.state.rainyTitle,
+            callback: this.onSearchDone
+        })
+    }
+
+    renderBeforeSearch = () => {
+        return (
+            <View>
+                <Text style={styles.titleHome}>Recommends</Text>
+                <TourCarousel data={this.state.recommends} />
+                <Text style={styles.titleHome}>Top Destinations</Text>
+                <TourCarousel data={this.state.topDestination} />
+                <View style={styles.category}>
+                    <Text style={styles.titleHome}>Promotions</Text>
+                    <TouchableHighlight underlayColor={colors.underlay} onPress={() => console.log("see all")}>
+                        <Text style={styles.seeAllText}>See all</Text>
+                    </TouchableHighlight>
+                </View>
+                <TourCarousel data={this.state.promotions} />
+                <Text style={styles.titleHome}>Good for Rainy Days</Text>
+                <TourCarousel data={this.state.rainy} />
+                <Text style={styles.titleHome}>Upcoming Holidays</Text>
+                <TourCarousel data={this.state.tripsByHoliday} />
+            </View>
+        )
+    }
+
+    renderAfterSearch = () => {
+        <View>
+            <Text>AFTER SEARCH</Text>
+        </View>
     }
 
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: 'lightblue' }}>
-                {/*{this.state.search ? <Text>Picture</Text> : <Image source={{ uri: "https://firebasestorage.googleapis.com/v0/b/travel-tour-ea526.appspot.com/o/teaser.jpeg.jpg?alt=media&token=5a578eff-7a47-48e1-8167-92c297f177ec" }}
-                    style={styles.imageHeader} resizeMode="cover"/>}*/}
+
                 <ScrollView style={{ flex: 1, backgroundColor: 'pink' }}>
-                    {this.state.search ? <Text>Picture</Text> : <Image source={{ uri: "https://firebasestorage.googleapis.com/v0/b/travel-tour-ea526.appspot.com/o/teaser.jpeg.jpg?alt=media&token=5a578eff-7a47-48e1-8167-92c297f177ec" }}
-                        style={styles.imageHeader} resizeMode="cover" />}
+                    {this.state.search ? <Image source={{ uri: this.state.search.image }}
+                        style={styles.imageHeader} resizeMode="cover" /> :
+                        <Image source={{ uri: "https://firebasestorage.googleapis.com/v0/b/travel-tour-ea526.appspot.com/o/teaser.jpeg.jpg?alt=media&token=5a578eff-7a47-48e1-8167-92c297f177ec" }}
+                            style={styles.imageHeader} resizeMode="cover" />}
 
                     <SearchBar
                         round
@@ -367,7 +401,9 @@ class Home extends Component {
 
                     <View style={{ flex: 1, backgroundColor: 'white', paddingVertical: 30 }}>
 
-                        {this.recentViewd()}
+                        {this.state.search ? this.renderAfterSearch() : this.renderBeforeSearch()}
+
+                        {/*{this.recentViewd()}
                         <Text style={styles.titleHome}>Recommends</Text>
                         <TourCarousel data={this.state.recommends} />
                         <Text style={styles.titleHome}>Top Destinations</Text>
@@ -382,9 +418,9 @@ class Home extends Component {
                         <Text style={styles.titleHome}>Good for Rainy Days</Text>
                         <TourCarousel data={this.state.rainy} />
                         <Text style={styles.titleHome}>Upcoming Holidays</Text>
-                        <TourCarousel data={this.state.tripsByHoliday} />
+                        <TourCarousel data={this.state.tripsByHoliday} />*/}
 
-                        
+
 
                     </View>
                 </ScrollView>
