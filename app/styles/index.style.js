@@ -19,7 +19,7 @@ export default StyleSheet.create({
         flex: 1,
         backgroundColor: 'white',
         justifyContent: 'center',
-       
+
         // backgroundColor: colors.background1
     },
     gradient: {
@@ -83,13 +83,13 @@ export default StyleSheet.create({
         // alignSelf: 'stretch'
     },
     seeAllButton: {
-      
+
     },
     seeAllText: {
         paddingHorizontal: 25,
     },
     category: {
-        flexDirection: 'row', 
+        flexDirection: 'row',
         justifyContent: 'space-between'
     },
     searchBar: {
@@ -107,7 +107,7 @@ export default StyleSheet.create({
     topic: {
         fontSize: 16,
         fontWeight: 'bold',
-        paddingVertical: 25,
+        paddingVertical: 15,
         paddingHorizontal: 21,
         color: 'white',
     },
@@ -118,17 +118,27 @@ export default StyleSheet.create({
     modalContent: {
         flex: 1,
         paddingVertical: 50,
-        paddingTop: 120,
+        paddingTop: 100,
+
     },
     modalTitleList: {
         color: 'white',
+
         // fontSize: 16,
     },
     modalList: {
-        borderBottomColor: colors.lightGray, 
+        borderBottomColor: colors.lightGray,
         backgroundColor: colors.modalBackground,
         borderTopWidth: 0,
         borderBottomWidth: 0.5,
         paddingHorizontal: 10,
+
+    },
+
+    modalListItem: {
+        borderBottomColor: colors.lightGray,
+        // borderBottomWidth: 0.5,
+      
+
     }
 });
