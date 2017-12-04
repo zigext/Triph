@@ -88,12 +88,12 @@ class SliderEntry extends Component {
         }
     }
 
-    saveToStorage = async (label, data) => {
-        console.log("save...", label, data)
-        await AsyncStorage.setItem(label, JSON.stringify({ data }))
-            .then(json => console.log('set success!'))
-            .catch(error => console.log('error!'))
-    }
+    // saveToStorage = async (label, data) => {
+    //     console.log("save...", label, data)
+    //     await AsyncStorage.setItem(label, JSON.stringify({ data }))
+    //         .then(json => console.log('set success!'))
+    //         .catch(error => console.log('error!'))
+    // }
 
     get image() {
         const { data: { image }, parallax, parallaxProps, even } = this.props;
