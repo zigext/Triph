@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Text, Image, AsyncStorage, TouchableHighlight } from 'react-native'
+import { View, ScrollView, Text, Image, AsyncStorage, TouchableHighlight, Keyboard } from 'react-native'
 import firebase from 'react-native-firebase'
 import styles, { colors } from '../styles/index.style'
 import TourCarousel from '../components/TourCarousel'
@@ -21,6 +21,7 @@ class Home extends Component {
             topDestination: [],
             topDestinationTitle: [],
             rainy: [],
+            rainyTitle: [],
             history: [],
             recommends: [],
             promotions: [],
@@ -28,13 +29,16 @@ class Home extends Component {
             tripsByHoliday: [],
             recommendsAll: [],
             promotionsAll: [],
-            allDestinations: [],
+            allDestinationTitle: [],
 
         }
     }
 
 
+
+
     componentDidMount = async () => {
+        Keyboard.dismiss()
         await this.fetchCountry()
         this.fetchTopDestination()
         this.fetchRainy()
@@ -45,7 +49,10 @@ class Home extends Component {
         let comingHoliday = this.findComingHoliday()
         this.fetchTripsByHoliday(comingHoliday)
         this.fetchAllTDestinations()
+    }
 
+    componentWillReceiveProps = (nextProps) => {
+        console.log("RECEIVE ", nextProps.default.search)
     }
 
     fetchCountry = async () => {
@@ -72,11 +79,11 @@ class Home extends Component {
 
     fetchTopDestination = () => {
         this.ref = firebase.database().ref(`top_destination`)
+        console.log("TOP")
         this.ref.once('value', (snapshot) => {
             let topDestination = snapshot.val() || {}
             let topDestinationTitle = snapshot.val() || {}
             topDestinationTitle.forEach((o) => {
-                delete o.image
                 delete o.tags
             })
             this.setState({
@@ -90,9 +97,13 @@ class Home extends Component {
         this.ref = firebase.database().ref(`rainy_days`)
         this.ref.once('value', (snapshot) => {
             let rainy = snapshot.val() || {}
-            // let topArray = Object.keys(top).map((k) => top[k])
+            let rainyTitle = snapshot.val() || {}
+            rainyTitle.forEach((o) => {
+                delete o.tags
+            })
             this.setState({
-                rainy
+                rainy,
+                rainyTitle
             })
         })
     }
@@ -100,10 +111,10 @@ class Home extends Component {
     fetchAllTDestinations = () => {
         this.ref = firebase.database().ref(`destinations`)
         this.ref.once('value', (snapshot) => {
-            let tripNames = snapshot.val() || {}
-            console.log("__________", tripNames)
-       
-        
+            let allDestinationTitle = snapshot.val() || {}
+            this.setState({
+                allDestinationTitle
+            })
         })
     }
 
@@ -332,7 +343,10 @@ class Home extends Component {
     }
 
     onSearchBarFocus = () => {
-        Actions.searchModal({ topDestinationName: this.state.topDestinationTitle })
+        Actions.searchModal({ topDestinationTitle: this.state.topDestinationTitle, 
+                              allDestinationTitle: this.state.allDestinationTitle,
+                              rainyTitle: this.state.rainyTitle
+                            })
     }
 
     render() {
@@ -369,6 +383,8 @@ class Home extends Component {
                         <TourCarousel data={this.state.rainy} />
                         <Text style={styles.titleHome}>Upcoming Holidays</Text>
                         <TourCarousel data={this.state.tripsByHoliday} />
+
+                        
 
                     </View>
                 </ScrollView>
