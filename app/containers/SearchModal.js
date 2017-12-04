@@ -22,8 +22,8 @@ class SearchModal extends Component {
     filterSearch = (text) => {
         console.log(text)
         const filtered = this.state.allDestinationsInitial.filter(function (item) {
-            const itemData = item.title.toLowerCase().trim()
-            const textData = text.toLowerCase().trim()
+            const itemData = item.title.toLowerCase().replace(/\s/g, '')
+            const textData = text.toLowerCase().replace(/\s/g, '')
             return itemData.indexOf(textData) > -1
         })
         this.setState({
