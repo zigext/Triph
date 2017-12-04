@@ -36,7 +36,8 @@ class SearchModal extends Component {
         console.log("cilick ", destination)
         // Actions.refresh({test: 123})
         // Actions.Home({test: 123})
-        this.props.dispatchSearch(destination)
+        // this.props.dispatchSearch(destination)
+        this.props.callback(destination)
         Actions.pop({ refresh: { test: 123 } })
         // NavigationActions.pop( {refresh: {test: 123} })
     }
