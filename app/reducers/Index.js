@@ -18,3 +18,14 @@ import { combineReducers } from 'redux'
 export default combineReducers(Object.assign(
     tripReducer,   
 ))
+
+// export default combineReducers({
+//     tripReducer: tripReducer
+// })
+
+// const reducers = combineReducers({
+// 	tripReducer: tripReducer
+// });
+
+// export default reducers
+
