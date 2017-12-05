@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { View, ScrollView, Text } from 'react-native'
-import { SearchBar, List, ListItem } from 'react-native-elements'
+import { SearchBar, List, ListItem, Button } from 'react-native-elements'
 import { NavigationActions } from 'react-navigation'
 import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
@@ -34,15 +34,20 @@ class SearchModal extends Component {
 
     chooseDestination = (destination) => {
         console.log("cilick ", destination)
-        // Actions.refresh({test: 123})
-        // Actions.Home({test: 123})
         // this.props.dispatchSearch(destination)
         this.props.callback(destination)
         Actions.pop({ refresh: { test: 123 } })
-        // NavigationActions.pop( {refresh: {test: 123} })
+
     }
 
-    //  inputStyle={{ fontSize: 18 }}
+    onReset = () => {
+        console.log("reset")
+        this.props.callbackReset()
+        // Actions.Home()
+        Actions.pop()
+    }
+
+
     //                     icon={{ paddingVertical: 50 }}
     render() {
 
@@ -58,10 +63,17 @@ class SearchModal extends Component {
                         inputStyle={{ fontSize: 18 }}
                         placeholder='Where to?'
                         onChangeText={this.filterSearch}
-                         />
+                    />
+
+
 
                     <View style={styles.modalContent}>
-
+                        <Button
+                            raised
+                            icon={{ name: 'cached' }}
+                            title='Reset'
+                            backgroundColor='#444649'
+                            onPress={this.onReset} />
 
 
                         <List containerStyle={styles.modalList}>
@@ -116,7 +128,7 @@ class SearchModal extends Component {
                             }
                         </List>
                     </View>
-          
+
                 </ScrollView>
             </View>
         );
