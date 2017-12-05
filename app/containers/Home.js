@@ -35,9 +35,12 @@ class Home extends Component {
             fullDay: [],
             twoDay: [],
             threeDay: [],
+            reset: false,
 
         }
+        //not nescessary
         this.onSearchDone = this.onSearchDone.bind(this)
+        this.onResetSearch = this.onResetSearch.bind(this)
     }
 
 
@@ -57,11 +60,16 @@ class Home extends Component {
         this.fetchTripsByHoliday(comingHoliday)
         this.fetchAllTDestinations()
 
+        if (this.props.search) {
+            console.log("mounted again")
+            this.onSearchDone(this.props.search)
+        }
+
     }
 
     componentWillReceiveProps = (nextProps) => {
         console.log("RECEIVE ", nextProps)
-        
+
     }
 
     fetchCountry = async () => {
@@ -93,6 +101,16 @@ class Home extends Component {
         this.FetchTripsByDuration("2days", desStr)
         this.FetchTripsByDuration("3days", desStr)
         // Actions.refresh()
+    }
+
+    //show default home scene
+    onResetSearch = async () => {
+        console.log("callback")
+        await this.setState({
+            search: null
+        })
+        this.fetchRecommends()
+        // this.renderBeforeSearch()
     }
 
     // componentWillUnmount() {
@@ -165,7 +183,7 @@ class Home extends Component {
         this.ref = firebase.database().ref(`trips`)
         this.ref.on('value', (snapshot) => {
             let trips = snapshot.val() || {}
-            if(destination) {
+            if (destination) {
                 console.log("IF")
                 trips = this.filterTripsByTags(trips, [destination])
                 console.log("IF ", trips)
@@ -364,36 +382,36 @@ class Home extends Component {
 
     FetchTripsByDuration = (duration, destination) => {
         //to lower case and replace all whitespaces
-        
+
         let tags = [duration, destination]
         this.ref = firebase.database().ref(`trips`)
         this.ref.on('value', (snapshot) => {
             let trips = snapshot.val() || {}
             let filtered = this.filterTripsByTags(trips, tags)
             console.log("filter ", filtered)
-            switch(duration) {
+            switch (duration) {
                 case "halfday":
                     this.setState({
                         halfDay: filtered
                     })
                     break
-                 case "fullday":
+                case "fullday":
                     this.setState({
                         fullDay: filtered
                     })
                     break
-                 case "2days":
+                case "2days":
                     this.setState({
                         twoDay: filtered
                     })
                     break
-                 case "3days":
+                case "3days":
                     this.setState({
                         threeDay: filtered
                     })
                     break
                 default:
-                    return 
+                    return
             }
             // let promotions = promotionsAll.slice(0, 7) //show only 6
             // this.setState({
@@ -421,11 +439,13 @@ class Home extends Component {
             topDestinationTitle: this.state.topDestinationTitle,
             allDestinationTitle: this.state.allDestinationTitle,
             rainyTitle: this.state.rainyTitle,
-            callback: this.onSearchDone
+            callback: this.onSearchDone,
+            callbackReset: this.onResetSearch,
         })
     }
 
     renderBeforeSearch = () => {
+
         return (
             <View>
                 {this.recentViewd()}
@@ -453,6 +473,9 @@ class Home extends Component {
 
         return (
             <View>
+
+                <Text style={styles.titleHome}>{this.state.search.title}</Text>
+
                 <Text style={styles.titleHome}>Recommends</Text>
                 <TourCarousel data={this.state.recommends} />
                 <Text style={styles.titleHome}>Half day</Text>
@@ -497,7 +520,8 @@ class Home extends Component {
                         lightTheme
                         onFocus={this.onSearchBarFocus}
                         containerStyle={styles.searchBar}
-                        placeholder='Type Here...' />
+                        inputStyle={{ fontSize: 18 }}
+                        placeholder='Where to?' />
 
                     <View style={{ flex: 1, backgroundColor: 'white', paddingVertical: 30 }}>
 
