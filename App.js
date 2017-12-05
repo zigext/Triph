@@ -27,9 +27,11 @@ import { Card } from "react-native-elements"
 import { Router, Scene, Tabs, Modal, Overlay, Actions } from 'react-native-router-flux'
 import CardStackStyleInterpolator from 'react-navigation/src/views/CardStack/CardStackStyleInterpolator'
 import { Provider } from 'react-redux'
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage } from 'react-native'
 import { persistStore } from 'redux-persist'
+import { createFilter, createBlacklistFilter } from 'redux-persist-transform-filter'
 import store from './app/config/Store'
+import * as tripReducer from './app/reducers/TripReducer'
 
 
 const TabIcon = ({ title, focused }) => {
@@ -58,6 +60,12 @@ const TabIcon = ({ title, focused }) => {
   }
   return (<Icon name={icon} type={type} color={color} />)
 }
+
+// you want to remove some keys before you save
+const saveSubsetBlacklistFilter = createBlacklistFilter(
+  'tripReducer',
+  ['search']
+)
 
 export default class App extends Component {
   constructor(props) {
@@ -102,7 +110,9 @@ export default class App extends Component {
       store,
       {
         storage: AsyncStorage,
-        blacklist: ['default']
+        transforms: [
+          saveSubsetBlacklistFilter,
+        ]
       },
       () => {
         this.setState({
@@ -139,6 +149,7 @@ export default class App extends Component {
                   activeBackgroundColor="#eee"
                   inactiveBackgroundColor="#FDFEFE"
                   activeTintColor={colors.blue}
+                  
                 >
                   <Scene
                     key="Home"
@@ -146,6 +157,7 @@ export default class App extends Component {
                     title="EXPLORE"
                     icon={TabIcon}
                     hideNavBar
+                  
 
                   />
                   <Scene
