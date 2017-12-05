@@ -7,7 +7,7 @@ import styles from '../styles/TourSliderEntry.style'
 import { viewTrip } from '../actions/TripAction'
 import { Actions } from 'react-native-router-flux'
 
-class SliderEntry extends Component {
+class TourSliderEntry extends Component {
 
     constructor(props) {
         super(props)
@@ -16,52 +16,7 @@ class SliderEntry extends Component {
             appState: AppState.currentState,
             history: [],
         }
-        // this.handler = this.handler.bind(this)
     }
-
-    componentDidMount = async () => {
-        // AsyncStorage.setItem('test2', JSON.stringify({ ...this.props.data }))
-        //     .then(console.log("save view success"))
-        // AsyncStorage.setItem('test2', JSON.stringify([{ test: 123 }, { test: 456 }]))
-        //     .then(json => console.log('success!'))
-        //     .catch(error => console.log('error!'));
-        // AsyncStorage.getItem('test2')
-        //     .then(req => JSON.parse(req))
-        //     .then(json => console.log(json))
-        //     .catch(error => console.log('error!'));
-        // AppState.addEventListener('change', this._handleAppStateChange)
-        // const value = await AsyncStorage.getItem('test2')
-        // console.log("VALUE ", value)
-        // if (value !== null) {
-        //     const test = JSON.parse(value)
-        //     console.log("test ", test);
-        // }
-    }
-
-    // componentWillUnmount = () => {
-    //     console.log("UNMOUNT")
-        
-    //     AsyncStorage.getItem('test2')
-    //         .then(req => JSON.parse(req))
-    //         .then(json => console.log("willunmount ", json))
-    //         .catch(error => console.log('error!'));
-    //     AppState.removeEventListener('change', this._handleAppStateChange);
-    // }
-
-    // _handleAppStateChange = (nextAppState) => {
-    //     if (this.state.appState.match("/background/")) {
-    //         console.log('App has come to the foreground!')
-    //     }
-    //     this.setState({ appState: nextAppState })
-    //     console.log("state ", this.state.appState)
-    //     // AsyncStorage.getItem('test2')
-    //     //     .then(req => JSON.parse(req))
-    //     //     .then(json => console.log("change ", json))
-    //     //     .catch(error => console.log('error!'));
-    //      AsyncStorage.setItem('test2', JSON.stringify([{ test: 123 }, { test: 999 }]))
-    //         .then(json => console.log('set success!'))
-    //         .catch(error => console.log('error!'));
-    // }
 
     static propTypes = {
         data: PropTypes.object.isRequired,
@@ -70,30 +25,18 @@ class SliderEntry extends Component {
         parallaxProps: PropTypes.object
     };
 
-    addViewHistory = () => {
-        // let history = this.state.history
-        // history.push(this.props.data)
-        // await this.setState({
-        //     history: [...this.state.history, this.props.data]
-        // })
+    onPressTrip = () => {
         //if it's top destination or rainy days
         //then not save in last viewd history
         if(this.props.data.tags[0] === 'top' || this.props.data.tags[0] === 'rainy') {
-            return
+            Actions.tabbar({search: this.props.data})
         }
         //normal trips
         else {
             this.props.dispatchViewTrip(this.props.data)
-            Actions.tripDetail()
+            Actions.tripDetail({trip: this.props.data})
         }
     }
-
-    // saveToStorage = async (label, data) => {
-    //     console.log("save...", label, data)
-    //     await AsyncStorage.setItem(label, JSON.stringify({ data }))
-    //         .then(json => console.log('set success!'))
-    //         .catch(error => console.log('error!'))
-    // }
 
     get image() {
         const { data: { image }, parallax, parallaxProps, even } = this.props;
@@ -133,7 +76,7 @@ class SliderEntry extends Component {
             <TouchableOpacity
                 activeOpacity={1}
                 style={styles.slideInnerContainer}
-                onPress={this.addViewHistory}
+                onPress={this.onPressTrip}
             >
                 <View style={[styles.imageContainer, even ? styles.imageContainerEven : {}]}>
                     {this.image}
@@ -161,7 +104,6 @@ class SliderEntry extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log("mapStateToProps in TourSliderEntry ", state)
     return state
 }
 
@@ -171,4 +113,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SliderEntry)
+export default connect(mapStateToProps, mapDispatchToProps)(TourSliderEntry)
