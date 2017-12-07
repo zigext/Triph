@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import { View, ScrollView, Text } from 'react-native'
+import { View, ScrollView, Text, TouchableHighlight } from 'react-native'
 import { SearchBar, List, ListItem, Button } from 'react-native-elements'
-import { NavigationActions } from 'react-navigation'
 import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import styles, { colors } from '../styles/index.style'
@@ -18,7 +17,7 @@ class SearchModal extends Component {
 
         }
     }
-    // https://codepen.io/mtclmn/pen/QyPVJp
+   
     filterSearch = (text) => {
         console.log(text)
         const filtered = this.state.allDestinationsInitial.filter(function (item) {
@@ -59,7 +58,7 @@ class SearchModal extends Component {
 
                     <SearchBar
                         round
-                        containerStyle={[styles.searchBar, { opacity: 1, paddingVertical: 50 }]}
+                        containerStyle={[styles.searchBar, { opacity: 1, marginVertical: 50 }]}
                         inputStyle={{ fontSize: 18 }}
                         placeholder='Where to?'
                         onChangeText={this.filterSearch}
@@ -68,12 +67,15 @@ class SearchModal extends Component {
 
 
                     <View style={styles.modalContent}>
+
+                   
                         <Button
                             raised
                             icon={{ name: 'cached' }}
                             title='Reset'
                             backgroundColor='#444649'
-                            onPress={this.onReset} />
+                            onPress={this.onReset}
+                            containerViewStyle={{alignSelf: 'flex-end', marginTop: 10}} />
 
 
                         <List containerStyle={styles.modalList}>
