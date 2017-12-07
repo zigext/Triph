@@ -18,7 +18,7 @@ export default StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
-        justifyContent: 'center',
+        // justifyContent: 'center',
 
         // backgroundColor: colors.background1
     },
@@ -27,12 +27,18 @@ export default StyleSheet.create({
     },
     scrollview: {
         flex: 1,
-        paddingTop: 50
+        paddingTop: 50,
     },
-    scrollviewContentContainer: {
-        paddingBottom: 50
-    },
+    // scrollviewContentContainer: {
+    //     paddingBottom: 50
+    // },
+    // scrollviewContent: {
+    //     padding: 25,
+    // },
     exampleContainer: {
+        marginBottom: 30
+    },
+    carouselContainer: {
         marginBottom: 30
     },
     title: {
@@ -43,10 +49,21 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center'
     },
-    titleHome: {
-        paddingHorizontal: 25,
+    subHeader: {
+        // marginHorizontal: 25,
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    titleSearch: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: colors.black,
+        marginBottom: 25,
+    },
+    titleDetail: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginBottom: 10,
     },
     subtitle: {
         marginTop: 5,
@@ -56,6 +73,12 @@ export default StyleSheet.create({
         fontSize: 13,
         fontStyle: 'italic',
         textAlign: 'center'
+    },
+    detailContent: {
+        margin: 25,
+    },
+    detailText: {
+        fontSize: 16,
     },
     slider: {
         marginTop: 25
@@ -72,21 +95,18 @@ export default StyleSheet.create({
         marginHorizontal: 8
     },
     imageHeader: {
-        // top: 0,
-        // bottom: 0,
-        // left: 0,
-        // right: 0,
-        // position: 'absolute',
-        // flex: 1,
         height: 200,
         width: 'auto',
-        // alignSelf: 'stretch'
+    },
+    imageTripDetail: {
+        height: 500,
+        width: 'auto',
     },
     seeAllButton: {
 
     },
     seeAllText: {
-        paddingHorizontal: 25,
+        // paddingHorizontal: 25,
     },
     category: {
         flexDirection: 'row',
@@ -130,15 +150,16 @@ export default StyleSheet.create({
         borderBottomColor: colors.lightGray,
         backgroundColor: colors.modalBackground,
         borderTopWidth: 0,
-        borderBottomWidth: 0.5,
-        paddingHorizontal: 10,
+        borderBottomWidth: 0,
+        marginHorizontal: 10,
+        marginBottom: 25,
 
     },
 
     modalListItem: {
         borderBottomColor: colors.lightGray,
-        // borderBottomWidth: 0.5,
-      
+        borderBottomWidth: 0.5,
+
 
     }
 });

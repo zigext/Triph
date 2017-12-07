@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Text, Image, AsyncStorage, TouchableHighlight, Keyboard } from 'react-native'
+import { View, ScrollView, Text, Image, AsyncStorage, TouchableHighlight, Keyboard, StyleSheet } from 'react-native'
 import firebase from 'react-native-firebase'
 import styles, { colors } from '../styles/index.style'
 import TourCarousel from '../components/TourCarousel'
@@ -427,7 +427,7 @@ class Home extends Component {
         else {
             return (
                 <View>
-                    <Text style={styles.titleHome}>Recently viewd</Text>
+                    <Text style={styles.subHeader}>Recently viewd</Text>
                     <TourCarousel data={this.state.history} />
                 </View>
             )
@@ -444,26 +444,40 @@ class Home extends Component {
         })
     }
 
+    onPressSeeAll = () => {
+        //go to list of all trips that match the tags
+    }
+
     renderBeforeSearch = () => {
 
         return (
-            <View>
+            <View style={styles.detailContent}>
                 {this.recentViewd()}
-                <Text style={styles.titleHome}>Recommends</Text>
+                <View style={_styles.category}>
+                    <Text style={styles.subHeader}>Recommends</Text>
+                    <TouchableHighlight underlayColor={colors.underlay} onPress={this.onPressSeeAll}>
+                        <Text style={styles.seeAllText}>See all</Text>
+                    </TouchableHighlight>
+                </View>
                 <TourCarousel data={this.state.recommends} />
-                <Text style={styles.titleHome}>Top Destinations</Text>
+
+                <Text style={styles.subHeader}>Top Destinations</Text>
                 <TourCarousel data={this.state.topDestination} />
-                <View style={styles.category}>
-                    <Text style={styles.titleHome}>Promotions</Text>
-                    <TouchableHighlight underlayColor={colors.underlay} onPress={() => console.log("see all")}>
+
+                <View style={_styles.category}>
+                    <Text style={styles.subHeader}>Promotions</Text>
+                    <TouchableHighlight underlayColor={colors.underlay} onPress={this.onPressSeeAll}>
                         <Text style={styles.seeAllText}>See all</Text>
                     </TouchableHighlight>
                 </View>
                 <TourCarousel data={this.state.promotions} />
-                <Text style={styles.titleHome}>Good for Rainy Days</Text>
+
+                <Text style={styles.subHeader}>Good for Rainy Days</Text>
                 <TourCarousel data={this.state.rainy} />
-                <Text style={styles.titleHome}>Upcoming Holidays</Text>
+
+                <Text style={styles.subHeader}>Upcoming Holidays</Text>
                 <TourCarousel data={this.state.tripsByHoliday} />
+
             </View>
         )
     }
@@ -472,44 +486,60 @@ class Home extends Component {
 
 
         return (
-            <View>
+            <View style={styles.detailContent}>
 
-                <Text style={styles.titleHome}>{this.state.search.title}</Text>
+                <Text style={styles.titleSearch}>{this.state.search.title}</Text>
 
-                <Text style={styles.titleHome}>Recommends</Text>
+                <View style={styles.category}>
+                    <Text style={styles.subHeader}>Recommends</Text>
+                    <TouchableHighlight underlayColor={colors.underlay} onPress={this.onPressSeeAll}>
+                        <Text style={styles.seeAllText}>See all</Text>
+                    </TouchableHighlight>
+                </View>
                 <TourCarousel data={this.state.recommends} />
-                <Text style={styles.titleHome}>Half day</Text>
-                <TourCarousel data={this.state.halfDay} />
-                <View style={styles.category}>
-                    <Text style={styles.titleHome}>Full day</Text>
-                    <TouchableHighlight underlayColor={colors.underlay} onPress={() => console.log("see all")}>
+
+                <View style={_styles.category}>
+                    <Text style={styles.subHeader}>Half day</Text>
+                    <TouchableHighlight underlayColor={colors.underlay} onPress={this.onPressSeeAll}>
                         <Text style={styles.seeAllText}>See all</Text>
                     </TouchableHighlight>
                 </View>
-                <TourCarousel data={this.state.fullDay} />
-                <View style={styles.category}>
-                    <Text style={styles.titleHome}>2 Days 1 Night</Text>
-                    <TouchableHighlight underlayColor={colors.underlay} onPress={() => console.log("see all")}>
+
+                {(this.state.halfDay.length > 0) ? <TourCarousel data={this.state.halfDay} /> : <Text style={_styles.noTripText}>No trips</Text>}
+
+                <View style={_styles.category}>
+                    <Text style={styles.subHeader}>Full day</Text>
+                    <TouchableHighlight underlayColor={colors.underlay} onPress={this.onPressSeeAll}>
                         <Text style={styles.seeAllText}>See all</Text>
                     </TouchableHighlight>
                 </View>
-                <TourCarousel data={this.state.twoDay} />
-                <View style={styles.category}>
-                    <Text style={styles.titleHome}>3 Days 2 Nights</Text>
-                    <TouchableHighlight underlayColor={colors.underlay} onPress={() => console.log("see all")}>
+                {(this.state.fullDay.length > 0) ? <TourCarousel data={this.state.fullDay} /> : <Text style={_styles.noTripText}>No trips</Text>}
+
+                <View style={_styles.category}>
+                    <Text style={styles.subHeader}>2 Days 1 Night</Text>
+                    <TouchableHighlight underlayColor={colors.underlay} onPress={this.onPressSeeAll}>
                         <Text style={styles.seeAllText}>See all</Text>
                     </TouchableHighlight>
                 </View>
-                <TourCarousel data={this.state.threeDay} />
+                {(this.state.twoDay.length > 0) ? <TourCarousel data={this.state.twoDay} /> : <Text style={_styles.noTripText}>No trips</Text>}
+
+                <View style={_styles.category}>
+                    <Text style={styles.subHeader}>3 Days 2 Nights</Text>
+                    <TouchableHighlight underlayColor={colors.underlay} onPress={this.onPressSeeAll}>
+                        <Text style={styles.seeAllText}>See all</Text>
+                    </TouchableHighlight>
+                </View>
+                {(this.state.threeDay.length > 0) ? <TourCarousel data={this.state.threeDay} /> : <Text style={_styles.noTripText}>No trips</Text>}
+
             </View>
         )
     }
 
     render() {
         return (
-            <View style={{ flex: 1, backgroundColor: 'lightblue' }}>
+            <View style={styles.container}>
 
-                <ScrollView style={{ flex: 1, backgroundColor: 'pink' }}>
+                <ScrollView style={styles.container}>
                     {this.state.search ? <Image source={{ uri: this.state.search.image }}
                         style={styles.imageHeader} resizeMode="cover" /> :
                         <Image source={{ uri: "https://firebasestorage.googleapis.com/v0/b/travel-tour-ea526.appspot.com/o/teaser.jpeg.jpg?alt=media&token=5a578eff-7a47-48e1-8167-92c297f177ec" }}
@@ -523,28 +553,9 @@ class Home extends Component {
                         inputStyle={{ fontSize: 18 }}
                         placeholder='Where to?' />
 
-                    <View style={{ flex: 1, backgroundColor: 'white', paddingVertical: 30 }}>
+                    <View style={[{ marginVertical: 30 }]}>
 
                         {this.state.search ? this.renderAfterSearch() : this.renderBeforeSearch()}
-
-                        {/*{this.recentViewd()}
-                        <Text style={styles.titleHome}>Recommends</Text>
-                        <TourCarousel data={this.state.recommends} />
-                        <Text style={styles.titleHome}>Top Destinations</Text>
-                        <TourCarousel data={this.state.topDestination} />
-                        <View style={styles.category}>
-                            <Text style={styles.titleHome}>Promotions</Text>
-                            <TouchableHighlight underlayColor={colors.underlay} onPress={() => console.log("see all")}>
-                                <Text style={styles.seeAllText}>See all</Text>
-                            </TouchableHighlight>
-                        </View>
-                        <TourCarousel data={this.state.promotions} />
-                        <Text style={styles.titleHome}>Good for Rainy Days</Text>
-                        <TourCarousel data={this.state.rainy} />
-                        <Text style={styles.titleHome}>Upcoming Holidays</Text>
-                        <TourCarousel data={this.state.tripsByHoliday} />*/}
-
-
 
                     </View>
                 </ScrollView>
@@ -554,7 +565,6 @@ class Home extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log("mapStateToProps in Home ", state)
     return state
 }
 
@@ -565,3 +575,16 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home)
+
+const _styles = StyleSheet.create({
+    noTripText: {
+        textAlign: 'center',
+        marginBottom: 30,
+        marginTop: 25,
+    },
+    category: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+
+});
