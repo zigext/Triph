@@ -1,9 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { Component } from 'react';
 import {
   Platform,
@@ -15,7 +9,6 @@ import {
 // import firebase from 'app/config/Firebase'
 import firebase from 'react-native-firebase'
 import { Icon } from 'react-native-elements'
-// import DeviceInfo from 'react-native-device-info'
 import Carousel from './app/components/Carousel'
 import Home from './app/containers/Home'
 import MyTrips from './app/containers/MyTrips'
@@ -24,14 +17,15 @@ import Detail from './app/containers/Detail'
 import SearchModal from './app/containers/SearchModal'
 import { colors } from './app/styles/index.style'
 import { Card } from "react-native-elements"
-import { Router, Scene, Tabs, Modal, Overlay, Actions } from 'react-native-router-flux'
+import { Router, Scene, Tabs, Modal, Overlay, Actions, Stack } from 'react-native-router-flux'
 import CardStackStyleInterpolator from 'react-navigation/src/views/CardStack/CardStackStyleInterpolator'
 import { Provider } from 'react-redux'
 import { AsyncStorage } from 'react-native'
 import { persistStore } from 'redux-persist'
 import { createFilter, createBlacklistFilter } from 'redux-persist-transform-filter'
+import * as Progress from 'react-native-progress'
 import store from './app/config/Store'
-import * as tripReducer from './app/reducers/TripReducer'
+
 
 
 const TabIcon = ({ title, focused }) => {
@@ -62,10 +56,10 @@ const TabIcon = ({ title, focused }) => {
 }
 
 // you want to remove some keys before you save
-const saveSubsetBlacklistFilter = createBlacklistFilter(
-  'tripReducer',
-  ['search']
-)
+// const saveSubsetBlacklistFilter = createBlacklistFilter(
+//   'tripReducer',
+//   ['search']
+// )
 
 export default class App extends Component {
   constructor(props) {
@@ -110,9 +104,9 @@ export default class App extends Component {
       store,
       {
         storage: AsyncStorage,
-        transforms: [
-          saveSubsetBlacklistFilter,
-        ]
+        // transforms: [
+        //   saveSubsetBlacklistFilter,
+        // ]
       },
       () => {
         this.setState({
@@ -120,6 +114,14 @@ export default class App extends Component {
         })
       }
     ) //purge here
+  }
+
+  onBackPress = () => {
+    if (Actions.state.index === 0) {
+      return false
+    }
+    Actions.pop()
+    return true
   }
 
   render() {
@@ -132,12 +134,17 @@ export default class App extends Component {
     return (
       <Provider store={store}>
         <Router>
-          <Overlay>
+          
             <Modal key="modal"
-
+              
               transitionConfig={() => ({ screenInterpolator: CardStackStyleInterpolator.forFadeFromBottomAndroid })}>
 
-              <Scene key="root">
+              {/*<Stack
+                key="root"
+                back
+              >*/}
+
+              <Scene key="app">
 
                 <Tabs
                   key="tabbar"
@@ -149,7 +156,7 @@ export default class App extends Component {
                   activeBackgroundColor="#eee"
                   inactiveBackgroundColor="#FDFEFE"
                   activeTintColor={colors.blue}
-                  
+
                 >
                   <Scene
                     key="Home"
@@ -157,7 +164,7 @@ export default class App extends Component {
                     title="EXPLORE"
                     icon={TabIcon}
                     hideNavBar
-                  
+
 
                   />
                   <Scene
@@ -175,9 +182,19 @@ export default class App extends Component {
                     hideNavBar
                   />
                 </Tabs>
-                <Scene key='tripDetail' component={Detail} hideNavBar />
+
+                {/*<Scene key='tripDetail' component={Detail} hideNavBar />*/}
+
               </Scene>
 
+              {/*outside of scene root will be opened as modal*/}
+              <Scene key='tripDetail'
+                component={Detail}
+                backButtonTintColor='white'
+                title="Detail"
+                titleStyle={{color: 'white'}}
+                navigationBarStyle={{ backgroundColor: colors.black}}
+                back/>
               <Scene key="searchModal"
                 component={SearchModal}
                 onExit={() => console.log('onExit')}
@@ -188,10 +205,12 @@ export default class App extends Component {
                 backButtonTintColor='white'
                 navTransparent
 
+
               />
               {/*navigationBarStyle={{backgroundColor: colors.modalBackground}}*/}
+              {/*</Stack>*/}
             </Modal>
-          </Overlay>
+         
         </Router>
       </Provider>
     );
