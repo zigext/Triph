@@ -28,10 +28,13 @@ class TourSliderEntry extends Component {
     onPressTrip = () => {
         //if it's top destination or rainy days
         //then not save in last viewd history
+        //render new home content
         if(this.props.data.tags[0] === 'top' || this.props.data.tags[0] === 'rainy') {
             Actions.tabbar({search: this.props.data})
         }
         //normal trips
+        //save to viewd history
+        //go to detail scene
         else {
             this.props.dispatchViewTrip(this.props.data)
             Actions.tripDetail({trip: this.props.data})
@@ -92,7 +95,7 @@ class TourSliderEntry extends Component {
                     </Text>
                     {description.price?  <Text
                         style={[styles.subtitle, even ? styles.subtitleEven : {}]}
-                        numberOfLines={2}
+                        numberOfLines={1}
                     >
                         {description.price} ฿
                     </Text> : null}

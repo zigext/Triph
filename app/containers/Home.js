@@ -46,7 +46,7 @@ class Home extends Component {
 
 
 
-    componentDidMount = async () => {
+    componentWillMount = async () => {
 
         Keyboard.dismiss()
         await this.fetchCountry()
@@ -62,7 +62,7 @@ class Home extends Component {
 
         if (this.props.search) {
             console.log("mounted again")
-            this.onSearchDone(this.props.search)
+            await this.onSearchDone(this.props.search)
         }
 
     }

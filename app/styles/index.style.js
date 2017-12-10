@@ -8,7 +8,7 @@ export const colors = {
     gray: '#888888',
     background1: '#B721FF',
     background2: '#21D4FD',
-    blue: '#3498DB',
+    blue: '#338bd5',
     underlay: '#d4d7d8',
     modalBackground: '#424242',
     lightGray: '#757575',
@@ -60,11 +60,11 @@ export default StyleSheet.create({
         color: colors.black,
         marginBottom: 25,
     },
-    titleDetail: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
+    // titleDetail: {
+    //     fontSize: 22,
+    //     fontWeight: 'bold',
+    //     marginBottom: 10,
+    // },
     subtitle: {
         marginTop: 5,
         paddingHorizontal: 30,
@@ -77,9 +77,9 @@ export default StyleSheet.create({
     detailContent: {
         margin: 25,
     },
-    detailText: {
-        fontSize: 16,
-    },
+    // detailText: {
+    //     fontSize: 16,
+    // },
     slider: {
         marginTop: 25
     },
@@ -98,10 +98,10 @@ export default StyleSheet.create({
         height: 200,
         width: 'auto',
     },
-    imageTripDetail: {
-        height: 500,
-        width: 'auto',
-    },
+    // imageTripDetail: {
+    //     height: 500,
+    //     width: 'auto',
+    // },
     seeAllButton: {
 
     },
