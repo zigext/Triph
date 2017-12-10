@@ -23,7 +23,6 @@ import { Provider } from 'react-redux'
 import { AsyncStorage } from 'react-native'
 import { persistStore } from 'redux-persist'
 import { createFilter, createBlacklistFilter } from 'redux-persist-transform-filter'
-import * as Progress from 'react-native-progress'
 import store from './app/config/Store'
 
 
