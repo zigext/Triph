@@ -154,7 +154,7 @@ export default class Detail extends Component {
                                 style={{ paddingVertical: 10 }}
                             />
                             <Button
-                                title='Book'
+                                title='Booking'
                                 buttonStyle={[_styles.button]}
                             />
                         </View>

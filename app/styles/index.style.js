@@ -114,7 +114,7 @@ export default StyleSheet.create({
     },
     searchBar: {
         flex: 1,
-        opacity: 0.5,
+        opacity: 0.7,
         position: 'absolute',
         left: 0,
         top: 0,

@@ -11,7 +11,7 @@ class SearchModal extends Component {
         super(props)
         this.state = {
             search: '',
-            initialTrips: [],
+            // initialTrips: [],
             allDestinationsFiltered: this.props.allDestinationTitle,
             allDestinationsInitial: this.props.allDestinationTitle,
 
@@ -19,7 +19,6 @@ class SearchModal extends Component {
     }
    
     filterSearch = (text) => {
-        console.log(text)
         const filtered = this.state.allDestinationsInitial.filter(function (item) {
             const itemData = item.title.toLowerCase().replace(/\s/g, '')
             const textData = text.toLowerCase().replace(/\s/g, '')
@@ -32,17 +31,13 @@ class SearchModal extends Component {
     }
 
     chooseDestination = (destination) => {
-        console.log("cilick ", destination)
-        // this.props.dispatchSearch(destination)
         this.props.callback(destination)
         Actions.pop({ refresh: { test: 123 } })
-
     }
 
     onReset = () => {
         console.log("reset")
         this.props.callbackReset()
-        // Actions.Home()
         Actions.pop()
     }
 
@@ -61,6 +56,8 @@ class SearchModal extends Component {
                         containerStyle={[styles.searchBar, { opacity: 1, marginVertical: 50 }]}
                         inputStyle={{ fontSize: 18 }}
                         placeholder='Where to?'
+                        placeholderTextColor={colors.blue}
+                        icon={{color: colors.blue}}
                         onChangeText={this.filterSearch}
                     />
 

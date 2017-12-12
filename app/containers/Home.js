@@ -93,7 +93,6 @@ class Home extends Component {
         await this.setState({
             search: destination
         })
-        console.log("STATE SEARCH ", this.state.search)
         let desStr = this.state.search.title.toLowerCase().replace(/\s/g, '')
         this.fetchRecommends(desStr)
         this.FetchTripsByDuration("halfday", desStr)
@@ -121,7 +120,6 @@ class Home extends Component {
 
     fetchTopDestination = () => {
         this.ref = firebase.database().ref(`top_destination`)
-        console.log("TOP")
         this.ref.once('value', (snapshot) => {
             let topDestination = snapshot.val() || {}
             let topDestinationTitle = snapshot.val() || {}
@@ -183,12 +181,11 @@ class Home extends Component {
         this.ref = firebase.database().ref(`trips`)
         this.ref.on('value', (snapshot) => {
             let trips = snapshot.val() || {}
+            //when search done, fetch recommends by destination
             if (destination) {
-                console.log("IF")
                 trips = this.filterTripsByTags(trips, [destination])
-                console.log("IF ", trips)
-                console.log("IF ", [destination])
             }
+            //else calculate rating of all trips
             let newTrips = this.calculateRating(trips)
             newTrips.sort(this.compare)
             let slice = newTrips.slice(0, 7) //show only 6
@@ -381,14 +378,11 @@ class Home extends Component {
     }
 
     FetchTripsByDuration = (duration, destination) => {
-        //to lower case and replace all whitespaces
-
         let tags = [duration, destination]
         this.ref = firebase.database().ref(`trips`)
         this.ref.on('value', (snapshot) => {
             let trips = snapshot.val() || {}
             let filtered = this.filterTripsByTags(trips, tags)
-            console.log("filter ", filtered)
             switch (duration) {
                 case "halfday":
                     this.setState({
@@ -500,36 +494,44 @@ class Home extends Component {
 
                 <View style={_styles.category}>
                     <Text style={styles.subHeader}>Half day</Text>
+                    {(this.state.halfDay.length > 0) ? 
                     <TouchableHighlight underlayColor={colors.underlay} onPress={this.onPressSeeAll}>
                         <Text style={styles.seeAllText}>See all</Text>
                     </TouchableHighlight>
+                    : null}
                 </View>
 
-                {(this.state.halfDay.length > 0) ? <TourCarousel data={this.state.halfDay} /> : <Text style={_styles.noTripText}>No trips</Text>}
+                {(this.state.halfDay.length > 0) ? <TourCarousel data={this.state.halfDay} /> : <Text style={_styles.noTripText}>There's no trip in this category yet</Text>}
 
                 <View style={_styles.category}>
                     <Text style={styles.subHeader}>Full day</Text>
+                    {(this.state.fullDay.length > 0) ? 
                     <TouchableHighlight underlayColor={colors.underlay} onPress={this.onPressSeeAll}>
                         <Text style={styles.seeAllText}>See all</Text>
                     </TouchableHighlight>
+                    : null}
                 </View>
-                {(this.state.fullDay.length > 0) ? <TourCarousel data={this.state.fullDay} /> : <Text style={_styles.noTripText}>No trips</Text>}
+                {(this.state.fullDay.length > 0) ? <TourCarousel data={this.state.fullDay} /> : <Text style={_styles.noTripText}>There's no trip in this category yet</Text>}
 
                 <View style={_styles.category}>
                     <Text style={styles.subHeader}>2 Days 1 Night</Text>
+                     {(this.state.twoDay.length > 0) ? 
                     <TouchableHighlight underlayColor={colors.underlay} onPress={this.onPressSeeAll}>
                         <Text style={styles.seeAllText}>See all</Text>
                     </TouchableHighlight>
+                    : null}
                 </View>
-                {(this.state.twoDay.length > 0) ? <TourCarousel data={this.state.twoDay} /> : <Text style={_styles.noTripText}>No trips</Text>}
+                {(this.state.twoDay.length > 0) ? <TourCarousel data={this.state.twoDay} /> : <Text style={_styles.noTripText}>There's no trip in this category yet</Text>}
 
                 <View style={_styles.category}>
                     <Text style={styles.subHeader}>3 Days 2 Nights</Text>
+                     {(this.state.threeDay.length > 0) ? 
                     <TouchableHighlight underlayColor={colors.underlay} onPress={this.onPressSeeAll}>
                         <Text style={styles.seeAllText}>See all</Text>
                     </TouchableHighlight>
+                    : null}
                 </View>
-                {(this.state.threeDay.length > 0) ? <TourCarousel data={this.state.threeDay} /> : <Text style={_styles.noTripText}>No trips</Text>}
+                {(this.state.threeDay.length > 0) ? <TourCarousel data={this.state.threeDay} /> : <Text style={_styles.noTripText}>There's no trip in this category yet</Text>}
 
             </View>
         )
@@ -551,6 +553,8 @@ class Home extends Component {
                         onFocus={this.onSearchBarFocus}
                         containerStyle={styles.searchBar}
                         inputStyle={{ fontSize: 18 }}
+                        icon={{color: colors.blue}}
+                        placeholderTextColor={colors.blue}
                         placeholder='Where to?' />
 
                     <View style={[{ marginVertical: 30 }]}>
